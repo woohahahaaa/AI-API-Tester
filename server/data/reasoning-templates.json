@@ -1,0 +1,74 @@
+[
+  {
+    "id": "GPT o-series / GPT-5.1",
+    "name": "GPT o-series / GPT-5.1",
+    "fields": [
+      {
+        "name": "effort",
+        "value": "medium",
+        "target": "reasoning_effort",
+        "options": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "火山方舟 Coding Plan",
+    "name": "火山方舟 Coding Plan",
+    "fields": [
+      {
+        "name": "type",
+        "value": "disabled",
+        "target": "thinking.type",
+        "options": [
+          "enabled",
+          "disabled"
+        ]
+      },
+      {
+        "name": "effort",
+        "value": "medium",
+        "target": "reasoning_effort",
+        "options": [
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "max"
+        ],
+        "enableWhen": "type != disabled"
+      }
+    ]
+  },
+  {
+    "id": "MiniMax",
+    "name": "MiniMax",
+    "fields": [
+      {
+        "name": "type",
+        "value": "disabled",
+        "target": "thinking.type",
+        "options": [
+          "adaptive",
+          "disabled"
+        ]
+      },
+      {
+        "name": "split",
+        "value": "false",
+        "target": "reasoning_split",
+        "options": [
+          "true",
+          "false"
+        ],
+        "enableWhen": "type!=disabled"
+      }
+    ]
+  }
+]

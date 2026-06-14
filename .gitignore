@@ -1,0 +1,44 @@
+
+# Added by opencode auto-gitignore
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+*.lnk
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.env
+.env.local
+.env.*.local
+.envrc
+*.log
+logs/
+.opencode/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite-journal
+
+# Project-specific
+node_modules/
+dist/
+.vite/
+
+# Local backup snapshots (created by /创建快照 skill)
+backup/
+
+# Runtime data — split by sensitivity:
+# - Files prefixed with `sensitive_` contain API keys, provider endpoints, model lists — NEVER commit.
+#   Use a prefix match so any future sensitive_* file is automatically excluded.
+# - reasoning-templates.json contains reasoning field templates only — safe to commit.
+# - .gitkeep is kept so the directory exists in git even when empty.
+server/data/sensitive_*
+!server/data/reasoning-templates.json
+!server/data/.gitkeep
