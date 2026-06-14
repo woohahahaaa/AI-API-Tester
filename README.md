@@ -27,13 +27,13 @@ Supports OpenAI Chat Completions, OpenAI Responses, Anthropic Messages, and any 
 
 最早只是想给 opencode 里的模型开 thinking 模式，折腾半天发现：**同样是 OpenAI Chat Completions 这个"通用协议"，各家字段还是不一样** —— OpenAI o-series 要 `reasoning_effort`，Anthropic 要 `thinking.type` + `budget_tokens`，字节豆包、智谱 GLM、月之暗面 MiniMax 又各自有别的字段名，各种 NewAPI / oneapi 中转根本没文档，只能一个个字段试。
 
-返回也乱：推理数据有的包在 `【think】...【/think】` 标签里，有的在 `reasoning_content` 字段，有的只在 SSE 流的某个 event 里闪过。更烦的是 —— opencode、Cline 这些上层工具**不给你看真实的 HTTP 请求体和返回数据**，debug 全靠猜。
+返回也乱：推理数据有的包在 `<think>...</think>` 标签里，有的在 `reasoning_content` 字段，有的只在 SSE 流的某个 event 里闪过。更烦的是 —— opencode、Cline 这些上层工具**不给你看真实的 HTTP 请求体和返回数据**，debug 全靠猜。
 
 所以做了这个**过程透明**的工具：你发出去的 URL / headers / body，和收回来的 status / headers / body / 原始 SSE 帧，全部摊在你面前。字段怎么配，自己试，立刻看到结果。
 
 > Born from real pain. I just wanted to enable thinking mode for a model inside opencode, and discovered that even within the supposedly "universal" OpenAI Chat Completions protocol, every vendor has different fields — OpenAI o-series wants `reasoning_effort`, Anthropic wants `thinking.type` + `budget_tokens`, Doubao/GLM/MiniMax each invent their own. Relay services often have no docs at all, so you end up guessing field names one by one.
 >
-> Responses are equally messy: reasoning data hides inside `【think】...【/think】` tags, or in a `reasoning_content` field, or flickers past in one specific SSE event. Worst of all, upper-layer tools like opencode and Cline **don't show you the real HTTP request/response** — debugging becomes pure guesswork.
+> Responses are equally messy: reasoning data hides inside `<think>...</think>` tags, or in a `reasoning_content` field, or flickers past in one specific SSE event. Worst of all, upper-layer tools like opencode and Cline **don't show you the real HTTP request/response** — debugging becomes pure guesswork.
 >
 > So I built this **fully transparent** tool: every URL / header / body you send, and every status / header / body / raw SSE frame you receive, is laid out in front of you. Configure fields, try them, see results immediately.
 
@@ -41,7 +41,45 @@ Supports OpenAI Chat Completions, OpenAI Responses, Anthropic Messages, and any 
 
 ## 🚀 启动 / Getting Started
 
+这个项目天生适合让 AI agent 帮忙跑 —— 启动、清理端口、健康检查这些重复劳动全部可以交给 agent。
+This project is built to be launched by an AI agent — starting servers, killing port conflicts, and health-checking can all be delegated.
+
 需要 Node.js 18+ / Requires Node.js 18+.
+
+### 1. 📥 下载到本地 / Clone Locally
+
+```bash
+git clone <repo-url>
+cd apitest
+```
+
+clone 下来后**什么都不用手动改**，把项目目录丢给 AI agent 就行。
+After cloning, **don't touch anything manually** — just hand the directory to your AI agent.
+
+### 2. 🤖 让 AI agent 帮你启动 / Let an AI Agent Start It
+
+把项目路径告诉 agent（OpenCode、Claude Code、Cursor 等），然后对它说一句：
+Point your agent (OpenCode / Claude Code / Cursor / etc.) at the project path and say:
+
+> **帮我启动这个项目** / **Start this project for me**
+
+agent 会自动 / The agent will automatically:
+
+1. 装 `server/` 和 `client/` 的依赖 / install deps in `server/` and `client/`
+2. 清理 3001 / 28001 端口的旧进程 / kill stale processes on ports 3001 / 28001
+3. 启动后端（Express，端口 3001）/ start the backend (Express, port 3001)
+4. 启动前端（Vite，端口 28001）/ start the frontend (Vite, port 28001)
+5. 健康检查两个服务 / health-check both services
+6. 报告本机 + 局域网访问地址 / report local + LAN URLs
+
+### 3. 🌍 打开浏览器 / Open Your Browser
+
+agent 启动完会告诉你访问地址，默认是 **http://localhost:28001/**。
+The agent will print the URL when it's ready — defaults to **http://localhost:28001/**.
+
+### 🛟 兜底：手动启动 / Fallback: Manual Start
+
+如果手头没 AI agent / If you don't have an AI agent handy:
 
 ```bash
 # 终端 1 / Terminal 1
@@ -51,11 +89,8 @@ cd server && npm install && npm run dev
 cd client && npm install && npm run dev
 ```
 
-Windows 可以双击根目录的 `start-dev.ps1`。
-On Windows, double-click `start-dev.ps1` in the project root.
-
-启动后访问 **http://localhost:28001/**（前端 28001，后端 3001）。
-Then open **http://localhost:28001/** (frontend on 28001, backend on 3001).
+Windows 用户可以直接双击项目根的 `start-dev.ps1` 一键启动。
+On Windows, double-click `start-dev.ps1` in the project root for a one-shot launch.
 
 ---
 
@@ -94,18 +129,20 @@ Real-time Output / Reasoning while streaming; expand panels afterwards to inspec
 
 ## 🧠 Reasoning 模板 / Reasoning Templates
 
-不同家的"先想后答"字段不一样，工具用模板抹平：
-Every vendor names their "think first" fields differently — templates paper over the differences:
+不同家的"先想后答"字段不一样，工具用模板抹平。预置了三个模板：
+Every vendor names their "think first" fields differently — templates paper over the differences. Three are bundled:
 
-| 场景 / Scenario | 字段 / Fields |
+| 模板 / Template | 字段 / Fields |
 |---|---|
-| GPT o-series（Chat） | `reasoning_effort` |
-| GPT o-series（Responses） | `reasoning.effort` / `reasoning.summary` |
-| Claude | `thinking.type` + `budget_tokens` |
-| 自定义 / Custom | 手动填 name / value / target |
+| **GPT o-series / GPT-5.1** | `reasoning_effort`（none / minimal / low / medium / high / xhigh） |
+| **火山方舟 Coding Plan** / Volcengine Ark Coding Plan | `thinking.type`（enabled / disabled）+ `reasoning_effort`（minimal / low / medium / high / max） |
+| **MiniMax** | `thinking.type`（adaptive / disabled）+ `reasoning_split`（true / false） |
 
-下拉框选一个就行，自定义后可以保存。
-Pick one from the dropdown, or build a custom one and save it for next time.
+> 📝 Anthropic / Claude 的 `thinking.type` + `budget_tokens` 走自定义模板或 extra body 配。
+> Anthropic / Claude's `thinking.type` + `budget_tokens` are configured via a custom template or the extra body.
+
+下拉框选一个就行，自定义后可以保存为新模板。
+Pick one from the dropdown, or build a custom one and save it as a new template.
 
 ---
 
