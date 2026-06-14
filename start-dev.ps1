@@ -16,7 +16,7 @@
 
 $ErrorActionPreference = 'Continue'
 
-$root      = 'C:\Users\wooh\Desktop\apitest'
+$root      = $PSScriptRoot
 $clientDir = Join-Path $root 'client'
 $serverDir = Join-Path $root 'server'
 

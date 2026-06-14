@@ -31,6 +31,10 @@ node_modules/
 dist/
 .vite/
 
+# Machine-generated local launcher scripts (contain absolute paths) — never commit.
+.run-client.cmd
+.run-server.cmd
+
 # Local backup snapshots (created by /创建快照 skill)
 backup/
 
