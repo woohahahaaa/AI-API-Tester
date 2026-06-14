@@ -6,6 +6,8 @@
 
 支持 OpenAI Chat Completions、OpenAI Responses、Anthropic Messages 三种协议，以及兼容这三家的中转。
 
+> *Supports OpenAI Chat Completions, OpenAI Responses, Anthropic Messages, and any compatible relay.*
+
 ![Preview](./preview.png)
 
 > ⚠️ **这个 README 是 AI 写的，可能有幻觉**。具体行为请以代码为准，描述跟实际对不上的地方欢迎提 issue / 直接改。
@@ -22,13 +24,13 @@
 
 最早只是想给 opencode 里的模型开 thinking 模式，折腾半天发现：**同样是 OpenAI Chat Completions 这个"通用协议"，各家字段还是不一样** —— OpenAI o-series 要 `reasoning_effort`，Anthropic 要 `thinking.type` + `budget_tokens`，字节豆包、智谱 GLM、月之暗面 MiniMax 又各自有别的字段名，各种 NewAPI / oneapi 中转根本没文档，只能一个个字段试。
 
-返回也乱：推理数据有的包在 `🙰...🙱` 标签里，有的在 `reasoning_content` 字段，有的只在 SSE 流的某个 event 里闪过。更烦的是 —— opencode、Cline 这些上层工具**不给你看真实的 HTTP 请求体和返回数据**，debug 全靠猜。
+返回也乱：推理数据有的包在 ` </think>` 标签里，有的在 `reasoning_content` 字段，有的只在 SSE 流的某个 event 里闪过。更烦的是 —— opencode、Cline 这些上层工具**不给你看真实的 HTTP 请求体和返回数据**，debug 全靠猜。
 
 所以做了这个**过程透明**的工具：你发出去的 URL / headers / body，和收回来的 status / headers / body / 原始 SSE 帧，全部摊在你面前。字段怎么配，自己试，立刻看到结果。
 
 > *Born from real pain. I just wanted to enable thinking mode for a model inside opencode, and discovered that even within the supposedly "universal" OpenAI Chat Completions protocol, every vendor has different fields — OpenAI o-series wants `reasoning_effort`, Anthropic wants `thinking.type` + `budget_tokens`, Doubao/GLM/MiniMax each invent their own. Relay services often have no docs at all, so you end up guessing field names one by one.*
 >
-> *Responses are equally messy: reasoning data hides inside `🙰...🙱` tags, or in a `reasoning_content` field, or flickers past in one specific SSE event. Worst of all, upper-layer tools like opencode and Cline **don't show you the real HTTP request/response** — debugging becomes pure guesswork.*
+> *Responses are equally messy: reasoning data hides inside `  response` tags, or in a `reasoning_content` field, or flickers past in one specific SSE event. Worst of all, upper-layer tools like opencode and Cline **don't show you the real HTTP request/response** — debugging becomes pure guesswork.*
 >
 > *So I built this **fully transparent** tool: every URL / header / body you send, and every status / header / body / raw SSE frame you receive, is laid out in front of you. Configure fields, try them, see results immediately.*
 
@@ -114,6 +116,8 @@ Windows 用户可以直接双击项目根的 `start-dev.ps1` 一键启动。
 | `openai-responses` | `{baseUrl}/v1/responses` |
 | `anthropic` | `{baseUrl}/v1/messages` |
 
+> *Three protocols supported: OpenAI Chat Completions (`/v1/chat/completions`), OpenAI Responses (`/v1/responses`), Anthropic Messages (`/v1/messages`).*
+
 ---
 
 ## 🧠 Reasoning 模板
@@ -143,6 +147,8 @@ Windows 用户可以直接双击项目根的 `start-dev.ps1` 一键启动。
 | 请求参数缓存 | 浏览器 localStorage |
 
 `server/data/` 已经在 `.gitignore`。
+
+> *Provider configs (with API keys) → `server/data/configs.json`, reasoning templates → `server/data/reasoning-templates.json`, per-model request cache → browser localStorage. `server/data/` is already in `.gitignore`.*
 
 ---
 
@@ -199,6 +205,8 @@ apitest/
 
 🛠️ **技术栈**: React 18 + Vite 5 + TypeScript 前端，Express 4 + tsx 后端，本地 JSON 存储，SSE 流式。
 
+> *Stack: React 18 + Vite 5 + TypeScript (frontend), Express 4 + tsx (backend), local JSON storage, SSE streaming.*
+
 ---
 
 ## 🌐 API 端点
@@ -210,6 +218,8 @@ apitest/
 | `GET/POST/PUT/DELETE` | `/api/configs[/:id]` | Provider CRUD |
 | `PATCH` | `/api/configs/:id/endpoint` | 部分更新 baseUrl / basePath |
 | `GET/POST/PUT/DELETE` | `/api/reasoning-templates[/:id]` | Reasoning 模板 CRUD |
+
+> *`POST /api/proxy` — proxy request to upstream LLM (streaming supported). `GET /api/models` — fetch model list. `GET/POST/PUT/DELETE /api/configs[/:id]` — provider CRUD. `PATCH /api/configs/:id/endpoint` — partial baseUrl/basePath update. `GET/POST/PUT/DELETE /api/reasoning-templates[/:id]` — reasoning template CRUD.*
 
 📦 `POST /api/proxy` 请求体：
 

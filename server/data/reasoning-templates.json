@@ -4,7 +4,7 @@
     "name": "GPT o-series / GPT-5.1",
     "fields": [
       {
-        "name": "effort",
+        "name": "思考程度",
         "value": "medium",
         "target": "reasoning_effort",
         "options": [
@@ -23,7 +23,7 @@
     "name": "火山方舟 Coding Plan",
     "fields": [
       {
-        "name": "type",
+        "name": "思考状态",
         "value": "disabled",
         "target": "thinking.type",
         "options": [
@@ -32,7 +32,7 @@
         ]
       },
       {
-        "name": "effort",
+        "name": "思考程度",
         "value": "medium",
         "target": "reasoning_effort",
         "options": [
@@ -51,7 +51,7 @@
     "name": "MiniMax",
     "fields": [
       {
-        "name": "type",
+        "name": "思考状态",
         "value": "disabled",
         "target": "thinking.type",
         "options": [
@@ -60,7 +60,7 @@
         ]
       },
       {
-        "name": "split",
+        "name": "分离输出",
         "value": "false",
         "target": "reasoning_split",
         "options": [
