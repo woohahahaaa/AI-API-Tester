@@ -8,17 +8,9 @@
 >
 > ⚠️ **This README is AI-generated and may hallucinate.** Code is the source of truth — open an issue or fix directly when descriptions diverge from reality.
 
-一个本地跑的 AI API 调试工具。**主要作用就三件事**：
+一个本地跑的 AI API 调试工具。有界面，填字段比写 JSON 省事，切换模型/渠道点一下就切；**请求体和返回体完全透明** —— 你发出去什么、收回来什么，全部摊开，方便调试。
 
-- 📝 方便地编辑请求体（messages、system、reasoning 字段、任意自定义 JSON）
-- 🔍 查看原始返回数据（status / headers / body 全摊出来）
-- 📡 查看流式响应的每个 chunk（原始 SSE 帧）
-
-A local AI API debugging tool. **It does three things**:
-
-- 📝 Edit request bodies easily (messages, system, reasoning fields, arbitrary custom JSON)
-- 🔍 Inspect raw responses (status / headers / body, all visible)
-- 📡 Watch every streaming chunk (raw SSE frames)
+A local AI API debugging tool. With a UI — filling fields beats hand-writing JSON, switching models/providers is one click; **full request/response transparency** — everything you send and receive is fully laid out for debugging.
 
 支持 OpenAI Chat Completions、OpenAI Responses、Anthropic Messages 三种协议，以及兼容这三家的中转。
 Supports OpenAI Chat Completions, OpenAI Responses, Anthropic Messages, and any compatible relay.
